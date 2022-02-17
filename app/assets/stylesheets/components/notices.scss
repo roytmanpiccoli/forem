@@ -1,0 +1,24 @@
+@import '../config/import';
+
+.crayons-notice {
+  padding: var(--su-4);
+  background: var(--card-bg);
+  color: var(--card-color);
+  border-radius: var(--radius-auto);
+
+  &--danger {
+    background: var(--accent-danger-a10);
+  }
+
+  &--warning {
+    background: var(--accent-warning-a10);
+  }
+
+  &--success {
+    background: var(--accent-success-a10);
+  }
+
+  &--info {
+    background: rgba(var(--brand), 0.1);
+  }
+}

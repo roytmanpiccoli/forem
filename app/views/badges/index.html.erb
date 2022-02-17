@@ -1,0 +1,19 @@
+<% title t("views.badges.meta.title") %>
+
+<div class="blank-space"></div>
+<div class="container article">
+  <h1 style="text-align: center;"><%= t("views.badges.heading") %></h1>
+  <p style="text-align: center; max-width: 96%;"><%= t("views.badges.desc") %></p>
+  <div class="body sticker-book">
+    <% @badges.each do |badge| %>
+    <a href="/badge/<%= badge.slug %>">
+      <img
+        class="badge-image <%= "unearned" unless badge.id.in?(@earned_badge_achievements) %>"
+        src="<%= optimized_image_url(badge.badge_image_url, width: 375) %>"
+        alt="<%= badge.title %> badge"
+        title="<%= badge.title %>"
+        loading="lazy" />
+    </a>
+    <% end %>
+  </div>
+</div>

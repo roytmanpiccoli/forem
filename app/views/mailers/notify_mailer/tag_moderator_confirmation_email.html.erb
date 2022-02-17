@@ -1,0 +1,40 @@
+<p>
+  Hey <%= @user.name %>!
+</p>
+<p>
+  Thanks for volunteering to be a <%= community_name %> tag moderator. We’ve added you as a moderator for <a href="<%= tag_url(@tag) %>">#<%= @tag.name %></a>. Note that your profile picture is now visible on this page.
+</p>
+<p>
+  As a tag moderator, you are able to:
+</p>
+<ul>
+  <li>
+     Remove #<%= @tag.name %> if it’s been added to an irrelevant post.
+  </li>
+  <li>
+    Add #<%= @tag %> to posts if applicable.
+  </li>
+  <li>
+    Update the #<%= @tag %> tag landing page, including submission guidelines and design visible in the sidebar.
+  </li>
+</ul>
+
+<p>
+  <strong>For details on how to access them, visit our
+  <a href="<%= app_url(tag_moderation_url) %>">tag moderation</a> page.</strong>
+</p>
+
+<p>
+  Tag moderation is something we're continuously iterating on, so you can expect adjustments and expanding features over time as we receive feedback. We regularly send out a biweekly Mod Newsletter to keep mods up to date on these changes, so look out for it!
+  Of course, don't hesitate to reach out to us at any moment if you have any feedback — feel free to write to <%= contact_link %> and share your thoughts.
+</p>
+
+<p>
+  Thanks so much for volunteering your time to benefit <%= community_name %>. We sincerely appreciate your help!.</p>
+<p>
+
+<p>
+  Happy Modding!
+  <br>
+  - <%= community_name %> Team
+</p>

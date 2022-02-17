@@ -1,0 +1,29 @@
+<% if @pinned_article %>
+  <%= render partial: "articles/single_story", locals: { story: @pinned_article, pinned: true, featured: @pinned_article.id == @featured_story.id } %>
+<% end %>
+
+<% if @featured_story.id && @pinned_article&.id != @featured_story.id %>
+  <%= render partial: "articles/single_story", locals: { story: @featured_story, featured: true, pinned: false } %>
+<% end %>
+
+<div id="article-index-podcast-div"></div>
+
+<div class="substories" id="substories">
+  <% if @stories.any? %>
+    <% @stories.each_with_index do |story, i| %>
+      <% next if story.id == @featured_story.id %>
+      <% next if story.id == @pinned_article&.id %>
+
+      <% if !user_signed_in? && i == 4 %>
+        <%= render "stories/sign_in_invitation" %>
+      <% end %>
+      <%= render partial: "articles/single_story", locals: { story: story, featured: false, pinned: false } %>
+    <% end %>
+    <% if @stories.size > 1 %>
+      <div class="placeholder-div"></div>
+    <% end %>
+    <div class="single-article-small-pic" id="article-index-hidden-div" style="display:none"></div>
+  <% end %>
+</div>
+
+<%= javascript_packs_with_chunks_tag "homePageFeedShortcuts", "followButtons", "feedPreviewCards", defer: true %>

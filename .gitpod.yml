@@ -1,0 +1,47 @@
+image:
+  file: .gitpod.dockerfile
+
+ports:
+  - port: 3000
+    onOpen: ignore
+  - port: 3035
+    onOpen: ignore
+  - port: 5432
+    onOpen: ignore
+  - port: 6379
+    onOpen: ignore
+
+tasks:
+  - name: Forem Server
+    env:
+      DISABLE_SPRING: 1
+    before: >
+      redis-server &
+      gp await-port 5432 &&
+      sleep 1
+    init: ./gitpod-init.sh
+    command: bin/startup
+  - name: Open Site
+    command: >
+      gp await-port 3000 &&
+      printf "Waiting for local Forem development environment to load in the browser..." &&
+      gp preview $(gp url 3000)
+
+github:
+  prebuilds:
+    # enable for the master/default branch (defaults to true)
+    master: true
+    # enable for all branches in this repo (defaults to false)
+    branches: true
+    # enable for pull requests coming from this repo (defaults to true)
+    pullRequests: true
+    # enable for pull requests coming from forks (defaults to false)
+    pullRequestsFromForks: true
+    # add a "Review in Gitpod" button as a comment to pull requests (defaults to true)
+    addComment: false
+    # add a "Review in Gitpod" button to pull requests (defaults to false)
+    addBadge: false
+    # add a label once the prebuild is ready to pull requests (defaults to false)
+    addLabel: false
+    # add a check to pull requests (defaults to true)
+    addCheck: true

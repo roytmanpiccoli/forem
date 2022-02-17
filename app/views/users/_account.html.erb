@@ -1,0 +1,132 @@
+<%= render "users/additional_authentication" %>
+
+<%= render "users/account_set_password" %>
+
+<%= render "users/account_providers_emails" %>
+
+<div class="crayons-card crayons-card--content-rows">
+  <header>
+    <h2 class="mb-2"><%= t("views.settings.account.api.heading", community: community_name) %></h2>
+    <p><%= t("views.settings.account.api.desc_html", community: community_name, doc: link_to(t("views.settings.account.api.doc"), "https://developers.forem.com/api")) %></p>
+  </header>
+
+  <div>
+    <h3 class="mb-2"><%= t("views.settings.account.api.gen.heading") %></h3>
+    <%= form_tag users_api_secrets_path, method: :post do %>
+      <%= fields_for :api_secret do |api_secret| %>
+        <div class="crayons-field mb-6">
+          <%= api_secret.label(:description, t("views.settings.account.api.gen.label"), class: "crayons-field__label") %>
+          <p class="crayons-field__description"><% t("views.settings.account.api.gen.text") %></p>
+          <%= api_secret.text_field(:description, placeholder: t("views.settings.account.api.gen.placeholder"), required: true, class: "crayons-textfield") %>
+        </div>
+      <% end %>
+      <button class="crayons-btn crayon-btn--secondary" type="submit"><%= t("views.settings.account.api.gen.submit") %></button>
+    <% end %>
+  </div>
+
+  <% unless @user.api_secrets.empty? %>
+    <div>
+      <h3><%= t("views.settings.account.api.active.heading") %></h3>
+
+      <% @user.api_secrets.order(created_at: :desc).each do |api_secret| %>
+        <details class="p-4 mt-2 crayons-card crayons-card--secondary">
+          <summary class="title fw-medium"><%= api_secret.description %></summary>
+          <div class="flex pt-2">
+            <div class="flex-1 pl-4">
+              <p class="ff-monospace"><%= api_secret.secret %></p>
+              <p class="fs-s"><%== t("views.settings.account.api.active.created", time: tag.time(api_secret.created_at.to_s, datetime: api_secret.created_at.rfc3339)) %></p>
+            </div>
+            <%= form_tag users_api_secret_path(api_secret.id), class: "api__secret__revoke", method: :delete do %>
+              <%= button_tag t("views.settings.account.api.revoke"), class: "crayons-btn crayons-btn--danger" %>
+            <% end %>
+          </div>
+        </details>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<div class="crayons-card crayons-card--content-rows">
+  <h2 class="crayons-subtitle-1">
+    <%= t("views.settings.account.export.heading") %>
+  </h2>
+
+  <% if @user.export_requested? %>
+    <div class="crayons-notice crayons-notice--warning" aria-live="polite">
+      <p><%= t("views.settings.account.export.requested") %></p>
+    </div>
+  <% else %>
+    <p class="-mt-2"><%= t("views.settings.account.export.desc") %></p>
+
+    <%= form_for(@user, html: { id: nil }) do |f| %>
+      <div class="crayons-field crayons-field--checkbox mb-6">
+        <%= f.check_box :export_requested, class: "crayons-checkbox" %>
+        <%= f.label :export_requested, t("views.settings.account.export.label"), class: "crayons-field__label" %>
+      </div>
+      <%= f.hidden_field :tab, value: @tab, id: nil %>
+      <div><button type="submit" class="crayons-btn"><%= t("views.settings.account.export.submit") %></button></div>
+    <% end %>
+  <% end %>
+</div>
+
+<div class="crayons-card crayons-card--content-rows">
+  <h2 class="crayons-subtitle-1 color-accent-danger">
+    <%= t("views.settings.danger") %>
+  </h2>
+
+  <% if @user.identities.enabled.size > 1 %>
+    <div class="grid gap-2">
+      <h3><%= t("views.settings.account.remove.heading") %></h3>
+      <p><%= t("views.settings.account.remove.desc1") %></p>
+      <p><%= t("views.settings.account.remove.desc2") %></p>
+      <ul class="list-disc pl-6">
+        <li><%= t("views.settings.account.remove.desc2a") %></li>
+        <li><%= t("views.settings.account.remove.desc2b") %></li>
+      </ul>
+      <p>
+        <%= t("views.settings.account.remove.desc3") %>
+        <%= render partial: "users/account_providers_settings" %>
+      </p>
+    </div>
+
+    <% authentication_enabled_providers_for_user.each do |provider| %>
+      <% onsubmit = "return confirm('#{t('views.settings.account.remove.confirm', provider: provider.official_name)}');" %>
+      <%= form_tag users_remove_identity_path, method: :delete, onsubmit: onsubmit do %>
+        <%= hidden_field_tag :provider, provider.provider_name %>
+
+        <button class="crayons-btn crayons-btn--danger crayons-btn--icon-left" type="submit">
+          <%= crayons_icon_tag(provider.provider_name, title: provider.official_name) %>
+          <%= t("views.settings.account.remove.submit", provider: provider.official_name) %>
+        </button>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="grid gap-2">
+    <h3><%= t("views.settings.account.delete.heading") %></h3>
+
+    <% if current_user.email? %>
+      <%= form_tag user_request_destroy_path, method: :post, autocomplete: "off", id: "delete__account", class: "grid gap-2" do %>
+        <p><%= t("views.settings.account.delete.desc1") %></p>
+        <ul class="list-disc pl-6">
+          <li><%= t("views.settings.account.delete.desc1a") %>
+            <%= render partial: "users/account_providers_settings" %>
+          </li>
+
+          <%# TODO: expand the delete messaging later %>
+          <li><%= t("views.settings.account.delete.desc1b") %></li>
+          <li><%= t("views.settings.account.delete.desc1c") %></li>
+        </ul>
+        <div><button class="crayons-btn crayons-btn--danger" id="delete__account__btn" type="submit"><%= t("views.settings.account.delete.submit") %></button></div>
+      <% end %>
+    <% else %>
+      <p><%= t("views.settings.account.delete.desc2_html", provide: link_to(t("views.settings.account.delete.provide"), "/settings/profile")) %></p>
+    <% end %>
+  </div>
+
+  <div>
+    <p>
+      <%= t("contact_prompts.if_any_questions_html") %>
+    </p>
+  </div>
+</div>

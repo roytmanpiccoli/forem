@@ -1,0 +1,97 @@
+@import '../config/import';
+@import './skip-link';
+
+.crayons-header {
+  height: var(--header-height);
+  background: var(--header-bg);
+  box-shadow: 0 1px 1px var(--header-shadow);
+  z-index: var(--z-sticky);
+
+  .default-header & {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+  }
+
+  &__container {
+    max-width: var(--site-width);
+    padding: 0 var(--layout-padding);
+    margin: auto;
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: var(--header-height);
+  }
+
+  .c-indicator {
+    position: absolute;
+    top: calc(var(--su-1) * -1);
+    right: 0;
+    box-shadow: 0 0 0 2px var(--header-bg);
+  }
+}
+
+// Search bar
+.crayons-header--search {
+  max-width: 420px;
+  flex: 1 auto;
+  margin: 0 var(--su-2);
+  display: none;
+
+  @media (min-width: $breakpoint-m) {
+    margin: 0 var(--su-4);
+    display: block;
+  }
+}
+
+// Dropdown under profile picture / hamburger icon
+.crayons-header__menu {
+  @media (min-width: $breakpoint-s) {
+    perspective: 1000px;
+  }
+
+  &__dropdown {
+    transform-style: preserve-3d;
+    transform-origin: top right;
+    transition: all var(--transition-props);
+    transform: var(
+      --dropdown-transform,
+      translateY(calc(1 * var(--su-1))) rotateX(-10deg)
+    );
+    opacity: var(--dropdown-opacity, 0);
+    visibility: var(--dropdown-visibility, hidden);
+  }
+
+  &.showing {
+    --dropdown-transform: translateY(0) rotateX(0);
+    --dropdown-opacity: 1;
+    --dropdown-visibility: visible;
+  }
+}
+
+.navigation-progress {
+  --duration: 3600ms;
+  --delay: 250ms;
+  position: fixed;
+  top: 0;
+  background: var(--accent-brand);
+  z-index: var(--z-popover);
+  height: var(--su-1);
+  width: 0;
+  &.showing {
+    display: block;
+    animation: showProgressBar var(--duration) ease-in-out;
+    animation-delay: var(--delay);
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes showProgressBar {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
