@@ -27,6 +27,12 @@ module PracticalDeveloper
     # See: https://guides.rubyonrails.org/configuring.html#results-of-config-load-defaults
     config.load_defaults 6.0
 
+    # Rails 7.0.3.1+ loads `serialize` columns with YAML.safe_load. The serialized columns hold app
+    # and gem types (Articles::CachedEntity, OmniAuth::AuthHash, Twitter and GitHub payloads) that
+    # existing rows already contain, so keep the pre-7.0 unsafe load until the stored classes are
+    # enumerated and allowed through `yaml_column_permitted_classes`.
+    config.active_record.use_yaml_unsafe_load = true
+
     ### FRAMEWORK DEFAULT OVERRIDES
     # Override new framework defaults to keep existing behavior.
     #

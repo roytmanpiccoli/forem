@@ -3,6 +3,12 @@ if Rails.env.test?
     config.client = Libhoney::TestClient.new
   end
 else
+  # Rails 7 no longer autoloads application constants while initializers run (the main autoloader
+  # is set up after them) and the sample hook below fires on the first instrumented event, which can
+  # happen during boot, so the sampler is required explicitly. Zeitwerk skips constants that are
+  # already defined.
+  require_relative "../../app/lib/honeycomb/noise_cancelling_sampler"
+
   honeycomb_api_key = ApplicationConfig["HONEYCOMB_API_KEY"]
   release_footprint = ApplicationConfig["RELEASE_FOOTPRINT"]
 
